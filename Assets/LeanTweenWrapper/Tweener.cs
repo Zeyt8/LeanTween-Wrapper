@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class Tweener : MonoBehaviour
 {
+    [Tooltip("If null, the object this script is attached to will be used")]
+    public GameObject ObjectToAnimate;
+
     private enum UIAnimationTypes
     {
         Move,
@@ -13,39 +16,37 @@ public class Tweener : MonoBehaviour
         Fade
     }
 
-    [SerializeField] GameObject objectToAnimate;
-
-    [SerializeField] UIAnimationTypes animationType;
-    public LeanTweenType easeType;
-    [SerializeField] AnimationCurve curve;
-    [SerializeField, Tooltip("When to trigger")] Trigger trigger;
+    [SerializeField] UIAnimationTypes _animationType;
+    public LeanTweenType EaseType;
+    [SerializeField] private AnimationCurve _curve;
+    [SerializeField, Tooltip("When to trigger automatically")] private Trigger _trigger;
+    
     [SerializeField] private bool _useUnscaledTime = true;
+    [SerializeField] private float _duration;
+    [SerializeField] private float _delay;
+    
+    [SerializeField] private bool _loop;
+    [SerializeField] private bool _pingpong;
+    [SerializeField] private bool _destroyOnFinish;
+    [SerializeField] private bool _destroyRootOnFinish;
+    [SerializeField] private GameObject _root;
 
-    [SerializeField] float duration;
-    [SerializeField] float delay;
-
-    [SerializeField] bool loop;
-    [SerializeField] bool pingpong;
-    [SerializeField] bool destroyOnFinish;
-    [SerializeField] bool destroyRootOnFinish;
-    [SerializeField] GameObject root;
-
-    [SerializeField, Tooltip("If true the value to animate will be set to from on begin")] bool startPositionOffset;
-    [SerializeField, Tooltip("Absolute: move to to. Relative: move to current + to. Scaled: move to current * to")] MoveType moveType;
-    private enum MoveType
+    [SerializeField, Tooltip("If true the value to animate will be set to From on begin")] private bool _useStartingValue;
+    [SerializeField] private EndValueType _endValueType;
+    private enum EndValueType
     {
         Absolute,
         Relative,
         Scaled
     }
-    public Vector3 from;
-    public Vector3 to;
-    public Color fromColor;
-    public Color toColor;
+    public Vector3 From;
+    public Vector3 To;
+    public Color FromColor;
+    public Color ToColor;
 
-    [SerializeField] UnityEvent onComplete;
-    [SerializeField, Tooltip("Trigger onComplete also on start")] bool onCompleteOnStart;
-    [SerializeField, Tooltip("Trigger onComplete at the end of each loop")] bool onCompleteOnRepeat;
+    [SerializeField, Tooltip("Trigger onComplete also on start")] private bool _onCompleteOnStart;
+    [SerializeField, Tooltip("Trigger onComplete at the end of each loop")] private bool _onCompleteOnRepeat;
+    [SerializeField] private UnityEvent _onComplete;
 
     [System.Flags]
     private enum Trigger
@@ -54,9 +55,9 @@ public class Tweener : MonoBehaviour
         OnStart = 2
     }
 
-    LTDescr _tweenObject;
-    RectTransform _rectTransform;
-    Image _image;
+    private LTDescr _tweenObject;
+    private RectTransform _rectTransform;
+    private Image _image;
 
     private void Awake()
     {
@@ -66,7 +67,11 @@ public class Tweener : MonoBehaviour
 
     private void Start()
     {
-        if (trigger.HasFlag(Trigger.OnStart))
+        if (ObjectToAnimate == null)
+        {
+            ObjectToAnimate = gameObject;
+        }
+        if (_trigger.HasFlag(Trigger.OnStart))
         {
             Play();
         }
@@ -74,7 +79,7 @@ public class Tweener : MonoBehaviour
 
     private void OnEnable()
     {
-        if (trigger.HasFlag(Trigger.OnEnable))
+        if (_trigger.HasFlag(Trigger.OnEnable))
         {
             Play();
         }
@@ -91,12 +96,12 @@ public class Tweener : MonoBehaviour
 
     private void HandleTween()
     {
-        if (objectToAnimate == null)
+        if (ObjectToAnimate == null)
         {
-            objectToAnimate = gameObject;
+            ObjectToAnimate = gameObject;
         }
 
-        switch (animationType)
+        switch (_animationType)
         {
             case UIAnimationTypes.Move:
                 Move();
@@ -114,25 +119,25 @@ public class Tweener : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
 
-        _tweenObject.setDelay(delay);
-        if (easeType == LeanTweenType.animationCurve)
+        _tweenObject.setDelay(_delay);
+        if (EaseType == LeanTweenType.animationCurve)
         {
-            _tweenObject.setEase(curve);
+            _tweenObject.setEase(_curve);
         }
         else
         {
-            _tweenObject.setEase(easeType);
+            _tweenObject.setEase(EaseType);
         }
-        _tweenObject.setDestroyOnComplete(destroyOnFinish);
+        _tweenObject.setDestroyOnComplete(_destroyOnFinish);
         _tweenObject.setOnComplete(OnComplete);
-        _tweenObject.setOnCompleteOnStart(onCompleteOnStart);
-        _tweenObject.setOnCompleteOnRepeat(onCompleteOnRepeat);
+        _tweenObject.setOnCompleteOnStart(_onCompleteOnStart);
+        _tweenObject.setOnCompleteOnRepeat(_onCompleteOnRepeat);
 
-        if (loop)
+        if (_loop)
         {
             _tweenObject.setLoopCount(int.MaxValue);
         }
-        if (pingpong)
+        if (_pingpong)
         {
             _tweenObject.setLoopPingPong();
         }
@@ -142,84 +147,84 @@ public class Tweener : MonoBehaviour
 
     private void Fade()
     {
-        if (startPositionOffset)
+        if (_useStartingValue)
         {
-            _image.color = fromColor;
+            _image.color = FromColor;
         }
 
-        Color dest = moveType switch
+        Color dest = _endValueType switch
         {
-            MoveType.Absolute => toColor,
-            MoveType.Relative => new Color(_image.color.r + toColor.r, _image.color.g + toColor.g,
-                _image.color.b + toColor.b, _image.color.a + toColor.a),
-            MoveType.Scaled => new Color(_image.color.r * toColor.r, _image.color.g * toColor.g,
-                _image.color.b * toColor.b, _image.color.a * toColor.a),
+            EndValueType.Absolute => ToColor,
+            EndValueType.Relative => new Color(_image.color.r + ToColor.r, _image.color.g + ToColor.g,
+                _image.color.b + ToColor.b, _image.color.a + ToColor.a),
+            EndValueType.Scaled => new Color(_image.color.r * ToColor.r, _image.color.g * ToColor.g,
+                _image.color.b * ToColor.b, _image.color.a * ToColor.a),
             _ => Color.white
         };
-        _tweenObject = LeanTween.color(_rectTransform, dest, duration);
+        _tweenObject = LeanTween.color(_rectTransform, dest, _duration);
     }
 
     private void Move()
     {
-        if (startPositionOffset)
+        if (_useStartingValue)
         {
-            _rectTransform.anchoredPosition = from;
+            _rectTransform.anchoredPosition = From;
         }
 
-        Vector3 dest = moveType switch
+        Vector3 dest = _endValueType switch
         {
-            MoveType.Absolute => to,
-            MoveType.Relative => new Vector3(_rectTransform.anchoredPosition.x + to.x,
-                _rectTransform.anchoredPosition.y + to.y, to.z),
-            MoveType.Scaled => new Vector3(_rectTransform.anchoredPosition.x * to.x,
-                _rectTransform.anchoredPosition.y * to.y, to.z),
+            EndValueType.Absolute => To,
+            EndValueType.Relative => new Vector3(_rectTransform.anchoredPosition.x + To.x,
+                _rectTransform.anchoredPosition.y + To.y, To.z),
+            EndValueType.Scaled => new Vector3(_rectTransform.anchoredPosition.x * To.x,
+                _rectTransform.anchoredPosition.y * To.y, To.z),
             _ => Vector3.zero
         };
-        _tweenObject = LeanTween.move(_rectTransform, dest, duration);
+        _tweenObject = LeanTween.move(_rectTransform, dest, _duration);
     }
 
     private void Rotate()
     {
-        if (startPositionOffset)
+        if (_useStartingValue)
         {
-            _rectTransform.rotation = Quaternion.Euler(from);
+            _rectTransform.rotation = Quaternion.Euler(From);
         }
 
-        Vector3 dest = moveType switch
+        Vector3 dest = _endValueType switch
         {
-            MoveType.Absolute => to,
-            MoveType.Relative => _rectTransform.rotation.eulerAngles + to,
-            MoveType.Scaled => new Vector3(_rectTransform.anchoredPosition.x * to.x,
-                _rectTransform.anchoredPosition.y * to.y, to.z),
+            EndValueType.Absolute => To,
+            EndValueType.Relative => _rectTransform.rotation.eulerAngles + To,
+            EndValueType.Scaled => new Vector3(_rectTransform.anchoredPosition.x * To.x,
+                _rectTransform.anchoredPosition.y * To.y, To.z),
             _ => Vector3.zero
         };
-        _tweenObject = LeanTween.rotate(_rectTransform, dest, duration);
+        _tweenObject = LeanTween.rotate(_rectTransform, dest, _duration);
     }
 
     private void Scale()
     {
-        if (startPositionOffset)
+        if (_useStartingValue)
         {
-            _rectTransform.localScale = from;
+            _rectTransform.localScale = From;
         }
 
-        Vector3 dest = moveType switch
+        Vector3 dest = _endValueType switch
         {
-            MoveType.Absolute => to,
-            MoveType.Relative => _rectTransform.localScale + to,
-            MoveType.Scaled => new Vector3(_rectTransform.anchoredPosition.x * to.x,
-                _rectTransform.anchoredPosition.y * to.y, to.z),
+            EndValueType.Absolute => To,
+            EndValueType.Relative => _rectTransform.localScale + To,
+            EndValueType.Scaled => new Vector3(_rectTransform.anchoredPosition.x * To.x,
+                _rectTransform.anchoredPosition.y * To.y, To.z),
             _ => Vector3.zero
         };
-        _tweenObject = LeanTween.scale(objectToAnimate, dest, duration);
+        _tweenObject = LeanTween.scale(ObjectToAnimate, dest, _duration);
     }
 
     private void OnComplete()
     {
-        onComplete.Invoke();
-        if (destroyRootOnFinish && root != null)
+        _onComplete.Invoke();
+        if (_destroyRootOnFinish && _root != null)
         {
-            Destroy(root);
+            Destroy(_root);
         }
     }
 }
