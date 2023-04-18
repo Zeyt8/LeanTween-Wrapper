@@ -31,10 +31,10 @@ public class Tweener : MonoBehaviour
     [System.Flags]
     public enum FinishBehaviour
     {
-        Destroy = 1,
-        DestroyRoot = 2,
-        Disable = 4,
-        DisableRoot = 8
+        Disable = 1,
+        Destroy = 2,
+        DisableRoot = 4,
+        DestroyRoot = 8
     }
     [SerializeField] private GameObject _root;
 
