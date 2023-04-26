@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Tweener : MonoBehaviour
 {
     [Tooltip("If null, the object this script is attached to will be used")]
-    public GameObject ObjectToAnimate;
+    public GameObject objectToAnimate;
 
     private enum UIAnimationTypes
     {
@@ -16,18 +16,18 @@ public class Tweener : MonoBehaviour
         Fade
     }
 
-    [SerializeField] UIAnimationTypes _animationType;
-    public LeanTweenType EaseType;
-    [SerializeField] private AnimationCurve _curve;
-    [SerializeField, Tooltip("When to trigger automatically")] private Trigger _trigger;
+    [SerializeField] UIAnimationTypes animationType;
+    public LeanTweenType easeType;
+    [SerializeField] private AnimationCurve curve;
+    [SerializeField, Tooltip("When to trigger automatically")] private Trigger trigger;
     
-    [SerializeField] private bool _useUnscaledTime = true;
-    [SerializeField] private float _duration;
-    [SerializeField] private float _delay;
+    [SerializeField] private bool useUnscaledTime = true;
+    [SerializeField] private float duration;
+    [SerializeField] private float delay;
     
-    [SerializeField] private bool _loop;
-    [SerializeField] private bool _pingpong;
-    [SerializeField] private FinishBehaviour _finishBehaviour;
+    [SerializeField] private bool loop;
+    [SerializeField] private bool pingpong;
+    [SerializeField] private FinishBehaviour finishBehaviour;
     [System.Flags]
     public enum FinishBehaviour
     {
@@ -36,24 +36,24 @@ public class Tweener : MonoBehaviour
         DisableRoot = 4,
         DestroyRoot = 8
     }
-    [SerializeField] private GameObject _root;
+    [SerializeField] private GameObject root;
 
-    [SerializeField, Tooltip("If true the value to animate will be set to From on begin")] private bool _useStartingValue;
-    [SerializeField] private EndValueType _endValueType;
+    [SerializeField, Tooltip("If true the value to animate will be set to From on begin")] private bool useStartingValue;
+    [SerializeField] private EndValueType endValueType;
     private enum EndValueType
     {
         Absolute,
         Relative,
         Scaled
     }
-    public Vector3 From;
-    public Vector3 To;
-    public Color FromColor;
-    public Color ToColor;
+    public Vector3 from;
+    public Vector3 to;
+    public Color fromColor;
+    public Color toColor;
 
-    [SerializeField, Tooltip("Trigger onComplete also on start")] private bool _onCompleteOnStart;
-    [SerializeField, Tooltip("Trigger onComplete at the end of each loop")] private bool _onCompleteOnRepeat;
-    [SerializeField] private UnityEvent _onComplete;
+    [SerializeField, Tooltip("Trigger onComplete also on start")] private bool onCompleteOnStart;
+    [SerializeField, Tooltip("Trigger onComplete at the end of each loop")] private bool onCompleteOnRepeat;
+    [SerializeField] private UnityEvent onComplete;
 
     [System.Flags]
     private enum Trigger
@@ -62,25 +62,25 @@ public class Tweener : MonoBehaviour
         OnStart = 2
     }
 
-    private LTDescr _tweenObject;
-    private RectTransform _rectTransform;
-    private Transform _transform;
-    private Image _image;
+    private LTDescr tweenObject;
+    private RectTransform rectTransform;
+    private Transform transform;
+    private Image image;
 
     private void Awake()
     {
-        _rectTransform = GetComponent<RectTransform>();
-        _transform = GetComponent<Transform>();
-        _image = GetComponent<Image>();
+        rectTransform = GetComponent<RectTransform>();
+        transform = GetComponent<Transform>();
+        image = GetComponent<Image>();
     }
 
     private void Start()
     {
-        if (ObjectToAnimate == null)
+        if (objectToAnimate == null)
         {
-            ObjectToAnimate = gameObject;
+            objectToAnimate = gameObject;
         }
-        if (_trigger.HasFlag(Trigger.OnStart))
+        if (trigger.HasFlag(Trigger.OnStart))
         {
             Play();
         }
@@ -88,7 +88,7 @@ public class Tweener : MonoBehaviour
 
     private void OnEnable()
     {
-        if (_trigger.HasFlag(Trigger.OnEnable))
+        if (trigger.HasFlag(Trigger.OnEnable))
         {
             Play();
         }
@@ -96,21 +96,21 @@ public class Tweener : MonoBehaviour
 
     public void Play()
     {
-        if (_tweenObject != null)
+        if (tweenObject != null)
         {
-            LeanTween.cancel(_tweenObject.uniqueId);
+            LeanTween.cancel(tweenObject.uniqueId);
         }
         HandleTween();
     }
 
     private void HandleTween()
     {
-        if (ObjectToAnimate == null)
+        if (objectToAnimate == null)
         {
-            ObjectToAnimate = gameObject;
+            objectToAnimate = gameObject;
         }
 
-        switch (_animationType)
+        switch (animationType)
         {
             case UIAnimationTypes.Move:
                 Move();
@@ -128,172 +128,172 @@ public class Tweener : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
 
-        _tweenObject.setDelay(_delay);
-        if (EaseType == LeanTweenType.animationCurve)
+        tweenObject.setDelay(delay);
+        if (easeType == LeanTweenType.animationCurve)
         {
-            _tweenObject.setEase(_curve);
+            tweenObject.setEase(curve);
         }
         else
         {
-            _tweenObject.setEase(EaseType);
+            tweenObject.setEase(easeType);
         }
-        _tweenObject.setDestroyOnComplete(_finishBehaviour.HasFlag(FinishBehaviour.Destroy));
-        _tweenObject.setOnComplete(OnComplete);
-        _tweenObject.setOnCompleteOnStart(_onCompleteOnStart);
-        _tweenObject.setOnCompleteOnRepeat(_onCompleteOnRepeat);
+        tweenObject.setDestroyOnComplete(finishBehaviour.HasFlag(FinishBehaviour.Destroy));
+        tweenObject.setOnComplete(OnComplete);
+        tweenObject.setOnCompleteOnStart(onCompleteOnStart);
+        tweenObject.setOnCompleteOnRepeat(onCompleteOnRepeat);
 
-        if (_loop)
+        if (loop)
         {
-            _tweenObject.setLoopCount(int.MaxValue);
+            tweenObject.setLoopCount(int.MaxValue);
         }
-        if (_pingpong)
+        if (pingpong)
         {
-            _tweenObject.setLoopPingPong();
+            tweenObject.setLoopPingPong();
         }
 
-        _tweenObject.setIgnoreTimeScale(_useUnscaledTime);
+        tweenObject.setIgnoreTimeScale(useUnscaledTime);
     }
 
     private void Fade()
     {
-        if (_useStartingValue)
+        if (useStartingValue)
         {
-            _image.color = FromColor;
+            image.color = fromColor;
         }
 
-        Color dest = _endValueType switch
+        Color dest = endValueType switch
         {
-            EndValueType.Absolute => ToColor,
-            EndValueType.Relative => new Color(_image.color.r + ToColor.r, _image.color.g + ToColor.g,
-                _image.color.b + ToColor.b, _image.color.a + ToColor.a),
-            EndValueType.Scaled => new Color(_image.color.r * ToColor.r, _image.color.g * ToColor.g,
-                _image.color.b * ToColor.b, _image.color.a * ToColor.a),
+            EndValueType.Absolute => toColor,
+            EndValueType.Relative => new Color(image.color.r + toColor.r, image.color.g + toColor.g,
+                image.color.b + toColor.b, image.color.a + toColor.a),
+            EndValueType.Scaled => new Color(image.color.r * toColor.r, image.color.g * toColor.g,
+                image.color.b * toColor.b, image.color.a * toColor.a),
             _ => Color.white
         };
-        _tweenObject = LeanTween.color(_rectTransform, dest, _duration);
+        tweenObject = LeanTween.color(rectTransform, dest, duration);
     }
 
     private void Move()
     {
-        if (_useStartingValue)
+        if (useStartingValue)
         {
-            if (_rectTransform != null)
-                _rectTransform.anchoredPosition = From;
-            else if (_transform != null)
-                _transform.position = From;
+            if (rectTransform != null)
+                rectTransform.anchoredPosition = from;
+            else if (transform != null)
+                transform.position = from;
         }
 
-        if (_rectTransform != null)
+        if (rectTransform != null)
         {
-            Vector3 dest = _endValueType switch
+            Vector3 dest = endValueType switch
             {
-                EndValueType.Absolute => To,
-                EndValueType.Relative => new Vector3(_rectTransform.anchoredPosition.x + To.x,
-                    _rectTransform.anchoredPosition.y + To.y, To.z),
-                EndValueType.Scaled => new Vector3(_rectTransform.anchoredPosition.x * To.x,
-                    _rectTransform.anchoredPosition.y * To.y, To.z),
+                EndValueType.Absolute => to,
+                EndValueType.Relative => new Vector3(rectTransform.anchoredPosition.x + to.x,
+                    rectTransform.anchoredPosition.y + to.y, to.z),
+                EndValueType.Scaled => new Vector3(rectTransform.anchoredPosition.x * to.x,
+                    rectTransform.anchoredPosition.y * to.y, to.z),
                 _ => Vector3.zero
             };
-            _tweenObject = LeanTween.move(_rectTransform, dest, _duration);
+            tweenObject = LeanTween.move(rectTransform, dest, duration);
         }
-        else if (_transform != null)
+        else if (transform != null)
         {
-            Vector3 dest = _endValueType switch
+            Vector3 dest = endValueType switch
             {
-                EndValueType.Absolute => To,
-                EndValueType.Relative => _transform.position + To,
-                EndValueType.Scaled => new Vector3(_transform.position.x * To.x,
-                    _transform.position.y * To.y, transform.position.z * To.z),
+                EndValueType.Absolute => to,
+                EndValueType.Relative => transform.position + to,
+                EndValueType.Scaled => new Vector3(transform.position.x * to.x,
+                    transform.position.y * to.y, transform.position.z * to.z),
                 _ => Vector3.zero
             };
-            _tweenObject = LeanTween.move(gameObject, dest, _duration);
+            tweenObject = LeanTween.move(gameObject, dest, duration);
         }
     }
 
     private void Rotate()
     {
-        if (_useStartingValue)
+        if (useStartingValue)
         {
-            if (_rectTransform != null)
-                _rectTransform.rotation = Quaternion.Euler(From);
-            else if (_transform != null)
-                _transform.rotation = Quaternion.Euler(From);
+            if (rectTransform != null)
+                rectTransform.rotation = Quaternion.Euler(from);
+            else if (transform != null)
+                transform.rotation = Quaternion.Euler(from);
         }
 
-        if (_rectTransform != null)
+        if (rectTransform != null)
         {
-            Vector3 dest = _endValueType switch
+            Vector3 dest = endValueType switch
             {
-                EndValueType.Absolute => To,
-                EndValueType.Relative => _rectTransform.rotation.eulerAngles + To,
-                EndValueType.Scaled => new Vector3(_rectTransform.anchoredPosition.x * To.x,
-                    _rectTransform.anchoredPosition.y * To.y, To.z),
+                EndValueType.Absolute => to,
+                EndValueType.Relative => rectTransform.rotation.eulerAngles + to,
+                EndValueType.Scaled => new Vector3(rectTransform.anchoredPosition.x * to.x,
+                    rectTransform.anchoredPosition.y * to.y, to.z),
                 _ => Vector3.zero
             };
-            _tweenObject = LeanTween.rotate(_rectTransform, dest, _duration);
+            tweenObject = LeanTween.rotate(rectTransform, dest, duration);
         }
-        else if (_transform != null)
+        else if (transform != null)
         {
-            Vector3 dest = _endValueType switch
+            Vector3 dest = endValueType switch
             {
-                EndValueType.Absolute => To,
-                EndValueType.Relative => _transform.rotation.eulerAngles + To,
-                EndValueType.Scaled => new Vector3(_transform.position.x * To.x,
-                    _transform.position.y * To.y, transform.position.z * To.z),
+                EndValueType.Absolute => to,
+                EndValueType.Relative => transform.rotation.eulerAngles + to,
+                EndValueType.Scaled => new Vector3(transform.position.x * to.x,
+                    transform.position.y * to.y, transform.position.z * to.z),
                 _ => Vector3.zero
             };
-            _tweenObject = LeanTween.rotate(gameObject, dest, _duration);
+            tweenObject = LeanTween.rotate(gameObject, dest, duration);
         }
     }
 
     private void Scale()
     {
-        if (_useStartingValue)
+        if (useStartingValue)
         {
-            if (_rectTransform != null)
-                _rectTransform.localScale = From;
-            else if (_transform != null)
-                _transform.localScale = From;
+            if (rectTransform != null)
+                rectTransform.localScale = from;
+            else if (transform != null)
+                transform.localScale = from;
         }
 
-        if (_rectTransform != null)
+        if (rectTransform != null)
         {
-            Vector3 dest = _endValueType switch
+            Vector3 dest = endValueType switch
             {
-                EndValueType.Absolute => To,
-                EndValueType.Relative => _rectTransform.localScale + To,
-                EndValueType.Scaled => new Vector3(_rectTransform.anchoredPosition.x * To.x,
-                    _rectTransform.anchoredPosition.y * To.y, To.z),
+                EndValueType.Absolute => to,
+                EndValueType.Relative => rectTransform.localScale + to,
+                EndValueType.Scaled => new Vector3(rectTransform.anchoredPosition.x * to.x,
+                    rectTransform.anchoredPosition.y * to.y, to.z),
                 _ => Vector3.zero
             };
-            _tweenObject = LeanTween.scale(_rectTransform, dest, _duration);
+            tweenObject = LeanTween.scale(rectTransform, dest, duration);
         }
-        else if (_transform != null)
+        else if (transform != null)
         {
-            Vector3 dest = _endValueType switch
+            Vector3 dest = endValueType switch
             {
-                EndValueType.Absolute => To,
-                EndValueType.Relative => _transform.localScale + To,
-                EndValueType.Scaled => new Vector3(_transform.position.x * To.x,
-                    _transform.position.y * To.y, transform.position.z * To.z),
+                EndValueType.Absolute => to,
+                EndValueType.Relative => transform.localScale + to,
+                EndValueType.Scaled => new Vector3(transform.position.x * to.x,
+                    transform.position.y * to.y, transform.position.z * to.z),
                 _ => Vector3.zero
             };
-            _tweenObject = LeanTween.scale(gameObject, dest, _duration);
+            tweenObject = LeanTween.scale(gameObject, dest, duration);
         }
     }
 
     private void OnComplete()
     {
-        _onComplete.Invoke();
-        if (_finishBehaviour.HasFlag(FinishBehaviour.DestroyRoot) && _root != null)
+        onComplete.Invoke();
+        if (finishBehaviour.HasFlag(FinishBehaviour.DestroyRoot) && root != null)
         {
-            Destroy(_root);
+            Destroy(root);
         }
-        else if (_finishBehaviour.HasFlag(FinishBehaviour.DisableRoot) && _root != null)
+        else if (finishBehaviour.HasFlag(FinishBehaviour.DisableRoot) && root != null)
         {
-            _root.SetActive(false);
+            root.SetActive(false);
         }
-        else if (_finishBehaviour.HasFlag(FinishBehaviour.Disable))
+        else if (finishBehaviour.HasFlag(FinishBehaviour.Disable))
         {
             gameObject.SetActive(false);
         }

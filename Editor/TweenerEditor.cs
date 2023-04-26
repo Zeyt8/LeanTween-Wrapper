@@ -7,125 +7,125 @@ using UnityEngine;
 [CanEditMultipleObjects]
 public class TweenerEditor : Editor
 {
-    private SerializedProperty _objectToAnimate;
+    private SerializedProperty objectToAnimate;
     
-    private SerializedProperty _animationType;
-    private SerializedProperty _easeType;
-    private SerializedProperty _curve;
-    private SerializedProperty _trigger;
+    private SerializedProperty animationType;
+    private SerializedProperty easeType;
+    private SerializedProperty curve;
+    private SerializedProperty trigger;
     
-    private SerializedProperty _useUnscaledTime;
-    private SerializedProperty _duration;
-    private SerializedProperty _delay;
+    private SerializedProperty useUnscaledTime;
+    private SerializedProperty duration;
+    private SerializedProperty delay;
 
-    private SerializedProperty _loop;
-    private SerializedProperty _pingpong;
-    private SerializedProperty _finishBehaviour;
-    private SerializedProperty _root;
+    private SerializedProperty loop;
+    private SerializedProperty pingpong;
+    private SerializedProperty finishBehaviour;
+    private SerializedProperty root;
 
-    private SerializedProperty _useStartingValue;
-    private SerializedProperty _endValueType;
+    private SerializedProperty useStartingValue;
+    private SerializedProperty endValueType;
 
-    private SerializedProperty _from;
-    private SerializedProperty _to;
-    private SerializedProperty _fromColor;
-    private SerializedProperty _toColor;
+    private SerializedProperty from;
+    private SerializedProperty to;
+    private SerializedProperty fromColor;
+    private SerializedProperty toColor;
 
-    private SerializedProperty _onComplete;
-    private SerializedProperty _onCompleteOnStart;
-    private SerializedProperty _onCompleteOnRepeat;
+    private SerializedProperty onComplete;
+    private SerializedProperty onCompleteOnStart;
+    private SerializedProperty onCompleteOnRepeat;
 
     private void OnEnable()
     {
-        _objectToAnimate = serializedObject.FindProperty("ObjectToAnimate");
-        _animationType = serializedObject.FindProperty("_animationType");
-        _easeType = serializedObject.FindProperty("EaseType");
-        _curve = serializedObject.FindProperty("_curve");
-        _trigger = serializedObject.FindProperty("_trigger");
-        _useUnscaledTime = serializedObject.FindProperty("_useUnscaledTime");
-        _duration = serializedObject.FindProperty("_duration");
-        _delay = serializedObject.FindProperty("_delay");
-        _loop = serializedObject.FindProperty("_loop");
-        _pingpong = serializedObject.FindProperty("_pingpong");
-        _finishBehaviour = serializedObject.FindProperty("_finishBehaviour");
-        _root = serializedObject.FindProperty("_root");
-        _useStartingValue = serializedObject.FindProperty("_useStartingValue");
-        _endValueType = serializedObject.FindProperty("_endValueType");
-        _from = serializedObject.FindProperty("From");
-        _to = serializedObject.FindProperty("To");
-        _fromColor = serializedObject.FindProperty("FromColor");
-        _toColor = serializedObject.FindProperty("ToColor");
-        _onComplete = serializedObject.FindProperty("_onComplete");
-        _onCompleteOnStart = serializedObject.FindProperty("_onCompleteOnStart");
-        _onCompleteOnRepeat = serializedObject.FindProperty("_onCompleteOnRepeat");
+        objectToAnimate = serializedObject.FindProperty("objectToAnimate");
+        animationType = serializedObject.FindProperty("animationType");
+        easeType = serializedObject.FindProperty("easeType");
+        curve = serializedObject.FindProperty("curve");
+        trigger = serializedObject.FindProperty("trigger");
+        useUnscaledTime = serializedObject.FindProperty("useUnscaledTime");
+        duration = serializedObject.FindProperty("duration");
+        delay = serializedObject.FindProperty("delay");
+        loop = serializedObject.FindProperty("loop");
+        pingpong = serializedObject.FindProperty("pingpong");
+        finishBehaviour = serializedObject.FindProperty("finishBehaviour");
+        root = serializedObject.FindProperty("root");
+        useStartingValue = serializedObject.FindProperty("useStartingValue");
+        endValueType = serializedObject.FindProperty("endValueType");
+        from = serializedObject.FindProperty("from");
+        to = serializedObject.FindProperty("to");
+        fromColor = serializedObject.FindProperty("fromColor");
+        toColor = serializedObject.FindProperty("toColor");
+        onComplete = serializedObject.FindProperty("onComplete");
+        onCompleteOnStart = serializedObject.FindProperty("onCompleteOnStart");
+        onCompleteOnRepeat = serializedObject.FindProperty("onCompleteOnRepeat");
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        EditorGUILayout.PropertyField(_objectToAnimate);
+        EditorGUILayout.PropertyField(objectToAnimate);
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Animation Behaviour", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(_animationType);
-        EditorGUILayout.PropertyField(_easeType);
-        EditorGUILayout.PropertyField(_curve);
-        EditorGUILayout.PropertyField(_trigger);
+        EditorGUILayout.PropertyField(animationType);
+        EditorGUILayout.PropertyField(easeType);
+        EditorGUILayout.PropertyField(curve);
+        EditorGUILayout.PropertyField(trigger);
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Animation Time Settings", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(_useUnscaledTime);
-        EditorGUILayout.PropertyField(_duration);
-        EditorGUILayout.PropertyField(_delay);
+        EditorGUILayout.PropertyField(useUnscaledTime);
+        EditorGUILayout.PropertyField(duration);
+        EditorGUILayout.PropertyField(delay);
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Animation Finish Settings", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(_loop);
-        EditorGUILayout.PropertyField(_pingpong);
-        EditorGUILayout.PropertyField(_finishBehaviour);
-        if (_finishBehaviour.intValue == (int) Tweener.FinishBehaviour.DestroyRoot ||
-            _finishBehaviour.intValue == (int) Tweener.FinishBehaviour.DisableRoot)
+        EditorGUILayout.PropertyField(loop);
+        EditorGUILayout.PropertyField(pingpong);
+        EditorGUILayout.PropertyField(finishBehaviour);
+        if (finishBehaviour.intValue == (int) Tweener.FinishBehaviour.DestroyRoot ||
+            finishBehaviour.intValue == (int) Tweener.FinishBehaviour.DisableRoot)
         {
-            EditorGUILayout.PropertyField(_root);
+            EditorGUILayout.PropertyField(root);
         }
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Animation Settings", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(_endValueType);
-        if (_endValueType.enumValueIndex == 0)
+        EditorGUILayout.PropertyField(endValueType);
+        if (endValueType.enumValueIndex == 0)
         {
             EditorGUILayout.LabelField("End value is equal to To", EditorStyles.helpBox);
         }
-        else if (_endValueType.enumValueIndex == 1)
+        else if (endValueType.enumValueIndex == 1)
         {
             EditorGUILayout.LabelField("End value is equal to value on begin + To", EditorStyles.helpBox);
         }
-        else if (_endValueType.enumValueIndex == 2)
+        else if (endValueType.enumValueIndex == 2)
         {
             EditorGUILayout.LabelField("End value is equal to value on begin * To element by element", EditorStyles.helpBox);
         }
-        EditorGUILayout.PropertyField(_useStartingValue);
-        if (_animationType.enumValueIndex != 3)
+        EditorGUILayout.PropertyField(useStartingValue);
+        if (animationType.enumValueIndex != 3)
         {
-            if (_useStartingValue.boolValue)
+            if (useStartingValue.boolValue)
             {
-                EditorGUILayout.PropertyField(_from);
+                EditorGUILayout.PropertyField(from);
             }
-            EditorGUILayout.PropertyField(_to);
+            EditorGUILayout.PropertyField(to);
         }
-        if (_animationType.enumValueIndex == 3)
+        if (animationType.enumValueIndex == 3)
         {
-            if (_useStartingValue.boolValue)
+            if (useStartingValue.boolValue)
             {
-                EditorGUILayout.PropertyField(_fromColor);
+                EditorGUILayout.PropertyField(fromColor);
             }
-            EditorGUILayout.PropertyField(_toColor);
+            EditorGUILayout.PropertyField(toColor);
         }
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Animation Events", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(_onCompleteOnStart);
-        EditorGUILayout.PropertyField(_onCompleteOnRepeat);
-        EditorGUILayout.PropertyField(_onComplete);
+        EditorGUILayout.PropertyField(onCompleteOnStart);
+        EditorGUILayout.PropertyField(onCompleteOnRepeat);
+        EditorGUILayout.PropertyField(onComplete);
         
         serializedObject.ApplyModifiedProperties();
     }
