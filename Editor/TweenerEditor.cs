@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
 
 [CustomEditor(typeof(Tweener))]
 [CanEditMultipleObjects]
@@ -10,6 +7,7 @@ public class TweenerEditor : Editor
     private SerializedProperty objectToAnimate;
     
     private SerializedProperty animationType;
+    private SerializedProperty useCanvasGroup;
     private SerializedProperty easeType;
     private SerializedProperty curve;
     private SerializedProperty trigger;
@@ -39,6 +37,7 @@ public class TweenerEditor : Editor
     {
         objectToAnimate = serializedObject.FindProperty("objectToAnimate");
         animationType = serializedObject.FindProperty("animationType");
+        useCanvasGroup = serializedObject.FindProperty("useCanvasGroup");
         easeType = serializedObject.FindProperty("easeType");
         curve = serializedObject.FindProperty("curve");
         trigger = serializedObject.FindProperty("trigger");
@@ -67,6 +66,10 @@ public class TweenerEditor : Editor
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Animation Behaviour", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(animationType);
+        if (animationType.enumValueIndex == 3)
+        {
+            EditorGUILayout.PropertyField(useCanvasGroup);
+        }
         EditorGUILayout.PropertyField(easeType);
         EditorGUILayout.PropertyField(curve);
         EditorGUILayout.PropertyField(trigger);

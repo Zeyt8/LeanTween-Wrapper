@@ -17,6 +17,7 @@ public class Tweener : MonoBehaviour
     }
 
     [SerializeField] UIAnimationTypes animationType;
+    [SerializeField] private bool useCanvasGroup;
     public LeanTweenType easeType;
     [SerializeField] private AnimationCurve curve;
     [SerializeField, Tooltip("When to trigger automatically")] private Trigger trigger;
@@ -66,12 +67,20 @@ public class Tweener : MonoBehaviour
     private RectTransform rectTransform;
     private Transform transform;
     private Image image;
+    private CanvasGroup canvasGroup;
 
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         transform = GetComponent<Transform>();
         image = GetComponent<Image>();
+        if (useCanvasGroup)
+        {
+            if (TryGetComponent(out CanvasGroup group))
+            {
+                canvasGroup = group;
+            }
+        }
     }
 
     private void Start()
@@ -94,6 +103,7 @@ public class Tweener : MonoBehaviour
         }
     }
 
+    [ContextMenu("Play")]
     public void Play()
     {
         if (tweenObject != null)
@@ -156,21 +166,31 @@ public class Tweener : MonoBehaviour
 
     private void Fade()
     {
-        if (useStartingValue)
+        if (useCanvasGroup)
         {
-            image.color = fromColor;
+            if (useStartingValue)
+            {
+                canvasGroup.alpha = fromColor.a;
+            }
+            tweenObject = LeanTween.alphaCanvas(canvasGroup, toColor.a, duration);
         }
-
-        Color dest = endValueType switch
+        else
         {
-            EndValueType.Absolute => toColor,
-            EndValueType.Relative => new Color(image.color.r + toColor.r, image.color.g + toColor.g,
-                image.color.b + toColor.b, image.color.a + toColor.a),
-            EndValueType.Scaled => new Color(image.color.r * toColor.r, image.color.g * toColor.g,
-                image.color.b * toColor.b, image.color.a * toColor.a),
-            _ => Color.white
-        };
-        tweenObject = LeanTween.color(rectTransform, dest, duration);
+            if (useStartingValue)
+            {
+                image.color = fromColor;
+            }
+            Color dest = endValueType switch
+            {
+                EndValueType.Absolute => toColor,
+                EndValueType.Relative => new Color(image.color.r + toColor.r, image.color.g + toColor.g,
+                    image.color.b + toColor.b, image.color.a + toColor.a),
+                EndValueType.Scaled => new Color(image.color.r * toColor.r, image.color.g * toColor.g,
+                    image.color.b * toColor.b, image.color.a * toColor.a),
+                _ => Color.white
+            };
+            tweenObject = LeanTween.color(rectTransform, dest, duration);
+        }
     }
 
     private void Move()
